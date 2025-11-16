@@ -5,7 +5,15 @@
     "category": "Productivity",
     "iconUrl": "https://placehold.co/128x128/7C3AED/FFFFFF?text=Z&font=inter",
     "rating": 4.8,
-    "description": "Organize your tasks and find your focus."
+    "description": "Organize your tasks, find your focus, and achieve deep work with our distraction-free interface.",
+    "fullDescription": "ZenFlow is the ultimate tool for modern productivity. It combines task management, calendar integration, and a Pomodoro timer into one seamless experience. Utilize our advanced analytics to understand how you spend your time and optimize your workflow for maximum output and minimal stress. Perfect for students, freelancers, and large teams.",
+    "developer": "Zenith Studios",
+    "version": "2.1.0",
+    "screenshots": [
+      "https://placehold.co/300x200/9333EA/FFFFFF?text=Dashboard",
+      "https://placehold.co/300x200/A78BFA/FFFFFF?text=Planner",
+      "https://placehold.co/300x200/C4B5FD/FFFFFF?text=Reports"
+    ]
   },
   {
     "id": 2,
@@ -13,7 +21,15 @@
     "category": "Finance",
     "iconUrl": "https://placehold.co/128x128/10B981/FFFFFF?text=N&font=inter",
     "rating": 4.5,
-    "description": "Smart, simple, and secure finances."
+    "description": "Smart, simple, and secure finances. Track all your bank accounts, budgets, and investments in one place.",
+    "fullDescription": "Take control of your financial future with NovaWallet. Our powerful budgeting tools use AI to predict future spending, helping you save more effectively. Enjoy bank-level security and real-time transaction updates. Whether you're tracking daily expenses or planning for retirement, NovaWallet makes money management effortless.",
+    "developer": "InfraFi Tech",
+    "version": "1.0.5",
+    "screenshots": [
+      "https://placehold.co/300x200/059669/FFFFFF?text=Budget",
+      "https://placehold.co/300x200/34D399/FFFFFF?text=Accounts",
+      "https://placehold.co/300x200/6EE7B7/FFFFFF?text=Investments"
+    ]
   },
   {
     "id": 3,
@@ -21,7 +37,15 @@
     "category": "Graphics & Design",
     "iconUrl": "https://placehold.co/128x128/EF4444/FFFFFF?text=P&font=inter",
     "rating": 4.9,
-    "description": "Your next-gen vector design tool."
+    "description": "Your next-gen vector design tool. Create stunning visuals with collaborative real-time editing.",
+    "fullDescription": "PixelPerfect offers a robust suite of vector editing tools with a modern, intuitive interface. Designed for professionals and beginners alike, it supports shared workspaces, version control, and a massive library of pre-built assets. Say goodbye to complex software and hello to fluid, creative design.",
+    "developer": "Creative Forge",
+    "version": "3.5.2",
+    "screenshots": [
+      "https://placehold.co/300x200/F87171/FFFFFF?text=Canvas",
+      "https://placehold.co/300x200/FCA5A5/FFFFFF?text=Layers",
+      "https://placehold.co/300x200/FECACA/FFFFFF?text=Tools"
+    ]
   },
   {
     "id": 4,
@@ -29,7 +53,15 @@
     "category": "Music & Audio",
     "iconUrl": "https://placehold.co/128x128/3B82F6/FFFFFF?text=E&font=inter",
     "rating": 4.3,
-    "description": "Discover and share new music."
+    "description": "Discover and share new music. High-fidelity streaming and personalized algorithmic playlists.",
+    "fullDescription": "EchoWave delivers millions of songs and podcasts directly to your device. Our unique recommendation engine learns your tastes faster than anyone else. Create and share playlists, download tracks for offline listening, and experience music the way it was meant to be heard—in lossless quality.",
+    "developer": "Audio Stream Co.",
+    "version": "4.0.1",
+    "screenshots": [
+      "https://placehold.co/300x200/60A5FA/FFFFFF?text=Player",
+      "https://placehold.co/300x200/93C5FD/FFFFFF?text=Playlists",
+      "https://placehold.co/300x200/BFDBFE/FFFFFF?text=Discovery"
+    ]
   },
   {
     "id": 5,
@@ -37,7 +69,15 @@
     "category": "Health & Fitness",
     "iconUrl": "https://placehold.co/128x128/F59E0B/FFFFFF?text=A&font=inter",
     "rating": 4.7,
-    "description": "Personalized workouts and mindfulness."
+    "description": "Personalized workouts and mindfulness. Achieve your fitness goals with custom plans and expert guidance.",
+    "fullDescription": "AuraFit is more than just a fitness tracker—it's your personal wellness coach. Get access to thousands of guided workouts, yoga sessions, and meditations. Connect with smart devices and track your progress with beautiful, motivational charts. Start your journey to a healthier you today.",
+    "developer": "Wellness Labs",
+    "version": "1.8.0",
+    "screenshots": [
+      "https://placehold.co/300x200/FCD34D/FFFFFF?text=Workout",
+      "https://placehold.co/300x200/FDE68A/FFFFFF?text=Mindfulness",
+      "https://placehold.co/300x200/FEF3C7/FFFFFF?text=Goals"
+    ]
   },
   {
     "id": 6,
@@ -45,7 +85,15 @@
     "category": "Developer Tools",
     "iconUrl": "https://placehold.co/128x128/4B5563/FFFFFF?text=C&font=inter",
     "rating": 4.6,
-    "description": "Share, review, and manage your code."
+    "description": "Share, review, and manage your code projects with integrated CI/CD pipelines.",
+    "fullDescription": "CodeHub provides everything a developer needs, from private repositories and advanced code review tools to automated deployment. Collaborate efficiently with your team, manage issues, and integrate seamlessly with your existing infrastructure. It’s the centralized platform for building high-quality software.",
+    "developer": "DevStream Inc.",
+    "version": "5.5.0",
+    "screenshots": [
+      "https://placehold.co/300x200/6B7280/FFFFFF?text=Repository",
+      "https://placehold.co/300x200/9CA3AF/FFFFFF?text=Review",
+      "https://placehold.co/300x200/D1D5DB/FFFFFF?text=Pipeline"
+    ]
   },
   {
     "id": 7,
@@ -53,7 +101,15 @@
     "category": "Books & Reference",
     "iconUrl": "https://placehold.co/128x128/D946EF/FFFFFF?text=S&font=inter",
     "rating": 4.4,
-    "description": "Collaborative story writing platform."
+    "description": "A collaborative story writing platform for authors, editors, and readers.",
+    "fullDescription": "Craft epic tales together. StoryWeaver provides real-time collaborative editing, character sheets, world-building tools, and private channels for discussing plot points. Publish your work directly to our community or export it in various formats. Your next bestseller starts here.",
+    "developer": "Narrative Engine",
+    "version": "1.2.3",
+    "screenshots": [
+      "https://placehold.co/300x200/E879F9/FFFFFF?text=Editor",
+      "https://placehold.co/300x200/F0ABFC/FFFFFF?text=Characters",
+      "https://placehold.co/300x200/FBCFE8/FFFFFF?text=WorldMap"
+    ]
   },
   {
     "id": 8,
@@ -61,6 +117,14 @@
     "category": "Food & Drink",
     "iconUrl": "https://placehold.co/128x128/84CC16/FFFFFF?text=G&font=inter",
     "rating": 4.5,
-    "description": "Find the best local recipes and chefs."
+    "description": "Find the best local recipes and chefs. Plan your meals and grocery lists effortlessly.",
+    "fullDescription": "GourmetGo connects you with a global community of home cooks and professional chefs. Browse thousands of curated recipes, create dynamic shopping lists, and even order ingredients from local stores. Whether you're making a quick dinner or a gourmet feast, we've got you covered.",
+    "developer": "Cuisine Devs",
+    "version": "2.0.0",
+    "screenshots": [
+      "https://placehold.co/300x200/A3E635/FFFFFF?text=Recipes",
+      "https://placehold.co/300x200/BEF264/FFFFFF?text=Lists",
+      "https://placehold.co/300x200/D9F99D/FFFFFF?text=Community"
+    ]
   }
 ]
