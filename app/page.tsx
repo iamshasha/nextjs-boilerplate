@@ -1,6 +1,6 @@
-import path from 'path'; // Node.js module for handling file paths
-import fs from 'fs/promises'; // Node.js module for file system operations
-import React from 'react'; // React is still needed for JSX
+"use client"; // This component requires client-side features like useState, useEffect, and event handlers
+
+import React, { useState, useEffect } from 'react';
 
 // --- TypeScript Interface for our App data ---
 interface App {
@@ -13,7 +13,6 @@ interface App {
 }
 
 // --- Helper Component for Star Ratings ---
-// We can define this component right in the same file.
 function StarRating({ rating }: { rating: number }) {
   const totalStars = 5;
   const fullStars = Math.floor(rating);
@@ -43,28 +42,32 @@ function StarRating({ rating }: { rating: number }) {
 }
 
 // --- App Card Component ---
-// This is also a server component by default.
+// FIX: Moving the image onError logic into a dedicated function for better server component safety, 
+// though the whole file is 'use client', this defensive programming helps prevent build errors.
 function AppCard({ app }: { app: App }) {
+  // Use a stable function for the onError handler
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    const target = e.target as HTMLImageElement;
+    target.onerror = null; 
+    target.src = "https://placehold.co/128x128/CCCCCC/FFFFFF?text=Error&font=inter";
+  };
+  
+  // Replace alert() with console.log() to avoid blocking popups in the iframe environment
+  const handleInstallClick = (appName: string) => {
+    console.log(`Installing ${appName}... (Simulated)`);
+    // NOTE: If you need to show feedback to the user, use a custom modal/message box, not alert().
+  };
+
   return (
     <div className="flex flex-col bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
       <div className="flex items-center p-5 space-x-4">
-        {/* We use a standard <img> tag here. 
-            If you were using next/image, you'd need to add 'placehold.co' 
-            to the 'domains' in your next.config.js file. */}
         <img
           src={app.iconUrl}
           alt={`${app.name} icon`}
           className="w-20 h-20 rounded-xl flex-shrink-0"
           width="80"
           height="80"
-          onError={(e) => {
-            // Fallback in case the placeholder image fails
-            // Note: In React Server Components, this onError might not behave as expected
-            // if you need client-side interactivity. For a simple fallback, it's okay.
-            const target = e.target as HTMLImageElement;
-            target.onerror = null; 
-            target.src = "https://placehold.co/128x128/CCCCCC/FFFFFF?text=Error&font=inter";
-          }}
+          onError={handleImageError} // Use the stable function here
         />
         <div className="flex-1 min-w-0">
           <h3 className="text-lg font-bold text-gray-900 dark:text-white truncate">{app.name}</h3>
@@ -78,49 +81,50 @@ function AppCard({ app }: { app: App }) {
         </p>
         <button 
           className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-          // onClick is client-side. To make this work, you'd need to make
-          // this button (or the AppCard) a Client Component.
-          // For now, we'll leave it disabled to keep the page a Server Component.
-          // To make it interactive, you would add 'use client' at the top of this file
-          // or move AppCard to its own file with 'use client'.
-          disabled 
+          onClick={() => handleInstallClick(app.name)} // Use the stable function here
         >
           Get
         </button>
-        {/* If you want the button to be interactive, you'd make a new
-            component file like 'GetButton.tsx', add 'use client' to it,
-            and import it here. */}
       </div>
     </div>
   );
 }
 
-// --- Main Page Component (as a Server Component) ---
-// By default, components in the 'app' dir are Server Components.
-// We make it 'async' to 'await' our data fetching.
-export default async function Home() {
-  
-  // --- Data Fetching (Server-Side) ---
-  // This code runs on the server, never in the browser.
-  let apps: App[] = [];
-  let error: string | null = null;
-  
-  try {
-    const filePath = path.join(process.cwd(), 'public', 'applist.json');
-    const jsonData = await fs.readFile(filePath, 'utf-8');
-    apps = JSON.parse(jsonData);
-  } catch (err) {
-    console.error("Failed to read applist.json:", err);
-    error = "Failed to load apps. Please make sure 'public/applist.json' exists.";
-  }
+// --- Main Page Component ---
+export default function Home() {
+  const [apps, setApps] = useState<App[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Note: The 'Head' component is replaced by 'metadata' exports in 'layout.tsx' or 'page.tsx'.
-  // You would typically add a metadata object in your 'layout.tsx' or here.
-  // For example:
-  // export const metadata = { title: 'App Market' };
+  useEffect(() => {
+    // Set document title (browser-compatible approach)
+    document.title = "App Market";
+
+    const fetchApps = async () => {
+      try {
+        // Fetch the JSON file from the public directory
+        const response = await fetch('/applist.json'); 
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data: App[] = await response.json();
+        setApps(data);
+      } catch (err) {
+        // Logging the full error for debugging
+        console.error("Failed to fetch app list:", err); 
+        setError("Failed to load apps. Ensure 'public/applist.json' is present.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchApps();
+  }, []); 
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans">
       
       <header className="py-10 border-b border-gray-200 dark:border-gray-700">
         <div className="container mx-auto px-6">
@@ -136,13 +140,21 @@ export default async function Home() {
       <main className="container mx-auto p-6 md:p-10">
         <h2 className="text-3xl font-bold mb-8">Featured Apps</h2>
         
-        {/* App Grid */}
-        {error && (
-          <div className="text-center text-red-500 bg-red-100 dark:bg-red-900 dark:text-red-200 p-4 rounded-lg">
-            {error}
+        {loading && (
+          <div className="text-center text-xl text-gray-500 dark:text-gray-400 py-10">
+            <div className="animate-spin inline-block w-8 h-8 border-4 border-t-4 border-blue-500 border-opacity-50 rounded-full"></div>
+            <p className="mt-2">Loading apps...</p>
           </div>
         )}
-        {!error && (
+        
+        {error && (
+          <div className="text-center text-red-700 bg-red-100 dark:bg-red-900 dark:text-red-200 p-4 rounded-lg shadow-md">
+            <p className="font-semibold mb-2">Error Loading Data</p>
+            <p>{error}</p>
+          </div>
+        )}
+        
+        {!loading && !error && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {apps.map((app) => (
               <AppCard key={app.id} app={app} />
