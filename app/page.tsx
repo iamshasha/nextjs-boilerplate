@@ -58,13 +58,14 @@ function AppCard({ app, onSelect }: { app: App, onSelect: (app: App) => void }) 
   return (
     <button 
       onClick={() => onSelect(app)}
-      className="text-left flex flex-col bg-white dark:bg-gray-800 rounded-2xl shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50"
+      // Added cursor-pointer for better UX
+      className="text-left flex flex-col bg-white dark:bg-gray-800 rounded-2xl shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50 cursor-pointer"
     >
       <div className="flex items-center p-5 space-x-4">
         <img
           src={app.iconUrl}
           alt={`${app.name} icon`}
-          className="w-16 h-16 md:w-20 md:h-20 rounded-xl flex-shrink-0 object-cover"
+          className="w-16 h-16 md:w-20 md:h-20 rounded-xl flex-shrink-0 object-cover transition-all duration-300"
           width="80"
           height="80"
           onError={handleImageError}
@@ -87,27 +88,30 @@ function AppCard({ app, onSelect }: { app: App, onSelect: (app: App) => void }) 
 // --- App Details Page Component ---
 function AppDetails({ app, onBack }: { app: App; onBack: () => void }) {
   const handleInstallClick = (appName: string) => {
+    // Simulate a message box instead of alert()
     console.log(`Installing ${appName}... (Simulated Installation)`);
+    // Optionally, implement a custom modal here
   };
 
   return (
     <div className="max-w-7xl mx-auto p-6 md:p-10">
       <button 
         onClick={onBack} 
-        className="flex items-center text-blue-600 dark:text-blue-400 mb-6 hover:underline transition-colors"
+        // Added cursor-pointer
+        className="flex items-center text-blue-600 dark:text-blue-400 mb-6 hover:underline transition-colors duration-200 cursor-pointer"
       >
         {/* Back Arrow Icon */}
-        <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+        <svg className="w-5 h-5 mr-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
         Back to App Market
       </button>
 
       {/* Main Details Section */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 transition-all duration-300">
         <div className="flex flex-col md:flex-row md:space-x-8">
           <img
             src={app.iconUrl}
             alt={`${app.name} icon`}
-            className="w-32 h-32 rounded-3xl object-cover flex-shrink-0 mb-4 md:mb-0 shadow-lg"
+            className="w-32 h-32 rounded-3xl object-cover flex-shrink-0 mb-4 md:mb-0 shadow-lg transition-all duration-300"
             width="128"
             height="128"
             onError={(e) => {
@@ -126,7 +130,8 @@ function AppDetails({ app, onBack }: { app: App; onBack: () => void }) {
             <p className="text-gray-700 dark:text-gray-300 text-lg mb-6">{app.description}</p>
             
             <button 
-              className="px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-bold text-lg rounded-xl transition-colors duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-opacity-50"
+              // Added cursor-pointer
+              className="px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-bold text-lg rounded-xl transition-colors duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-opacity-50 cursor-pointer"
               onClick={() => handleInstallClick(app.name)}
             >
               Get App
@@ -143,7 +148,7 @@ function AppDetails({ app, onBack }: { app: App; onBack: () => void }) {
                 key={index}
                 src={src}
                 alt={`${app.name} screenshot ${index + 1}`}
-                className="w-72 h-48 rounded-lg shadow-md object-cover flex-shrink-0"
+                className="w-72 h-48 rounded-lg shadow-md object-cover flex-shrink-0 transition-shadow duration-300 hover:shadow-xl"
                 width="288"
                 height="192"
                 onError={(e) => {
@@ -159,9 +164,9 @@ function AppDetails({ app, onBack }: { app: App; onBack: () => void }) {
         <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="md:col-span-2">
             <h2 className="text-2xl font-bold mb-3 text-gray-900 dark:text-white">About this app</h2>
-            <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{app.fullDescription}</p>
+            <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap transition-colors duration-200">{app.fullDescription}</p>
           </div>
-          <div className="md:col-span-1 bg-gray-50 dark:bg-gray-700 p-6 rounded-xl">
+          <div className="md:col-span-1 bg-gray-50 dark:bg-gray-700 p-6 rounded-xl transition-colors duration-200">
             <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Technical Details</h3>
             <p className="text-sm text-gray-600 dark:text-gray-300 mb-2"><strong>Developer:</strong> {app.developer}</p>
             <p className="text-sm text-gray-600 dark:text-gray-300 mb-2"><strong>Version:</strong> {app.version}</p>
@@ -193,6 +198,10 @@ export default function Home() {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data: App[] = await response.json();
+        // Added explicit Array.isArray check for robustness against the reported error
+        if (!Array.isArray(data)) {
+            throw new Error("Invalid data structure received. Expected an array.");
+        }
         setApps(data);
       } catch (err) {
         console.error("Failed to fetch app list:", err); 
@@ -233,7 +242,7 @@ export default function Home() {
   // If an app is selected, render the details page immediately
   if (selectedApp) {
     return (
-      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 font-sans">
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 font-sans transition-colors duration-300">
         <AppDetails app={selectedApp} onBack={() => setSelectedApp(null)} />
       </div>
     );
@@ -241,10 +250,10 @@ export default function Home() {
 
   // Render the main store view
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans transition-colors duration-300">
       
       {/* Header and Search Bar (Microsoft Store style) */}
-      <header className="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-10">
+      <header className="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-10 transition-colors duration-300">
         <div className="container mx-auto px-6 py-4 flex flex-col md:flex-row md:items-center justify-between">
           <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600 mb-3 md:mb-0">
             App Store
@@ -254,19 +263,20 @@ export default function Home() {
             placeholder="Search apps, games, and categories..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full md:w-96 p-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all"
+            className="w-full md:w-96 p-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-300"
           />
         </div>
       </header>
 
       {/* Tabs Navigation */}
-      <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-[72px] md:top-[76px] z-10">
+      <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-[72px] md:top-[76px] z-10 transition-colors duration-300">
         <div className="container mx-auto px-6 overflow-x-auto whitespace-nowrap scrollbar-hide">
           {TABS.map(tab => (
             <button
               key={tab}
               onClick={() => { setActiveTab(tab); setSearchTerm(''); }}
-              className={`inline-block py-3 px-4 text-sm font-medium transition-colors duration-200 border-b-2 
+              // Added cursor-pointer
+              className={`inline-block py-3 px-4 text-sm font-medium transition-colors duration-200 border-b-2 cursor-pointer 
                 ${activeTab === tab 
                   ? 'border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400' 
                   : 'border-transparent text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'}`
@@ -295,14 +305,15 @@ export default function Home() {
           </div>
         )}
 
-        {!loading && !error && filteredApps.length === 0 && (
+        {/* FIX: Added Array.isArray check to prevent 'map' on undefined errors */}
+        {!loading && !error && Array.isArray(filteredApps) && filteredApps.length === 0 && (
           <div className="text-center py-10 text-gray-500 dark:text-gray-400">
             <p className="text-2xl font-semibold">No results found.</p>
             <p className="mt-2">Try a different search term or category.</p>
           </div>
         )}
         
-        {!loading && !error && filteredApps.length > 0 && (
+        {!loading && !error && Array.isArray(filteredApps) && filteredApps.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredApps.map((app) => (
               <AppCard key={app.id} app={app} onSelect={setSelectedApp} />
@@ -311,7 +322,7 @@ export default function Home() {
         )}
       </main>
 
-      <footer className="text-center py-8 mt-10 border-t border-gray-200 dark:border-gray-700">
+      <footer className="text-center py-8 mt-10 border-t border-gray-200 dark:border-gray-700 transition-colors duration-300">
         <p className="text-sm text-gray-500 dark:text-gray-400">
           © {new Date().getFullYear()} App Store Demo. All rights reserved.
         </p>
