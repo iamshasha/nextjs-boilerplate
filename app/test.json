@@ -1,0 +1,8 @@
+{
+    "ver":"1.10",
+    "channel":"beta",
+    "type":"major",
+    "name":"Lion Mountain II",
+    "standalone_url":"https://artinet.b-cdn.net/upd/standalone/win64/install.exe",
+    "ota_url":"https://artinet.b-cdn.net/upd/ota/%ver%/ota.upd"
+}
