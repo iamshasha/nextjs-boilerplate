@@ -1,0 +1,66 @@
+[
+  {
+    "id": 1,
+    "name": "ZenFlow",
+    "category": "Productivity",
+    "iconUrl": "https://placehold.co/128x128/7C3AED/FFFFFF?text=Z&font=inter",
+    "rating": 4.8,
+    "description": "Organize your tasks and find your focus."
+  },
+  {
+    "id": 2,
+    "name": "NovaWallet",
+    "category": "Finance",
+    "iconUrl": "https://placehold.co/128x128/10B981/FFFFFF?text=N&font=inter",
+    "rating": 4.5,
+    "description": "Smart, simple, and secure finances."
+  },
+  {
+    "id": 3,
+    "name": "PixelPerfect",
+    "category": "Graphics & Design",
+    "iconUrl": "https://placehold.co/128x128/EF4444/FFFFFF?text=P&font=inter",
+    "rating": 4.9,
+    "description": "Your next-gen vector design tool."
+  },
+  {
+    "id": 4,
+    "name": "EchoWave",
+    "category": "Music & Audio",
+    "iconUrl": "https://placehold.co/128x128/3B82F6/FFFFFF?text=E&font=inter",
+    "rating": 4.3,
+    "description": "Discover and share new music."
+  },
+  {
+    "id": 5,
+    "name": "AuraFit",
+    "category": "Health & Fitness",
+    "iconUrl": "https://placehold.co/128x128/F59E0B/FFFFFF?text=A&font=inter",
+    "rating": 4.7,
+    "description": "Personalized workouts and mindfulness."
+  },
+  {
+    "id": 6,
+    "name": "CodeHub",
+    "category": "Developer Tools",
+    "iconUrl": "https://placehold.co/128x128/4B5563/FFFFFF?text=C&font=inter",
+    "rating": 4.6,
+    "description": "Share, review, and manage your code."
+  },
+  {
+    "id": 7,
+    "name": "StoryWeaver",
+    "category": "Books & Reference",
+    "iconUrl": "https://placehold.co/128x128/D946EF/FFFFFF?text=S&font=inter",
+    "rating": 4.4,
+    "description": "Collaborative story writing platform."
+  },
+  {
+    "id": 8,
+    "name": "GourmetGo",
+    "category": "Food & Drink",
+    "iconUrl": "https://placehold.co/128x128/84CC16/FFFFFF?text=G&font=inter",
+    "rating": 4.5,
+    "description": "Find the best local recipes and chefs."
+  }
+]
