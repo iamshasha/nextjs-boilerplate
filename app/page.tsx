@@ -19,6 +19,7 @@ interface App {
 // --- Constants ---
 const ALL_CATEGORIES = ['Productivity', 'Finance', 'Graphics & Design', 'Music & Audio', 'Health & Fitness', 'Developer Tools', 'Books & Reference', 'Food & Drink'];
 const TABS = ['Featured', 'All Apps', ...ALL_CATEGORIES];
+const TRANSITION_DURATION = 300; // Match CSS transition duration in ms
 
 // --- Helper Component for Star Ratings ---
 function StarRating({ rating, size = 'w-4 h-4' }: { rating: number, size?: string }) {
@@ -29,7 +30,7 @@ function StarRating({ rating, size = 'w-4 h-4' }: { rating: number, size?: strin
 
   const StarIcon = ({ color }: { color: string }) => (
     <svg className={`${size} ${color}`} fill="currentColor" viewBox="0 0 20 20">
-      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.868 5.748h6.04c.969 0 1.371 1.24.588 1.81l-4.887 3.548 1.868 5.748c.3.921-.755 1.688-1.54 1.18l-4.887-3.548-4.887 3.548c-.784.508-1.84-.259-1.54-1.18l1.868-5.748-4.887-3.548c-.783-.57-.38-1.81.588-1.81h6.04L9.049 2.927z" />
+      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.868 5.748h6.04c.969 0 1.371 1.24.588 1.81l-4.887 3.548 1.868 5.748c.3.921-.755 1.688-1.54 1.18l-4.887-3.548-4.887 3.548c-.784.508-1.84-.259-1.54-1.18l1.868-5.748-4.887-3.548c-.783-.57-.38-1.81.588-1-81h6.04L9.049 2.927z" />
     </svg>
   );
 
@@ -58,7 +59,6 @@ function AppCard({ app, onSelect }: { app: App, onSelect: (app: App) => void }) 
   return (
     <button 
       onClick={() => onSelect(app)}
-      // Added cursor-pointer for better UX
       className="text-left flex flex-col bg-white dark:bg-gray-800 rounded-2xl shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50 cursor-pointer"
     >
       <div className="flex items-center p-5 space-x-4">
@@ -85,19 +85,68 @@ function AppCard({ app, onSelect }: { app: App, onSelect: (app: App) => void }) 
   );
 }
 
+// --- Image Zoom Modal Component ---
+function ZoomedImageModal({ src, onClose }: { src: string; onClose: () => void; }) {
+  return (
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 backdrop-blur-sm transition-opacity duration-300"
+      onClick={onClose}
+    >
+      <button 
+        onClick={(e) => { e.stopPropagation(); onClose(); }} 
+        className="absolute top-4 right-4 text-white text-4xl font-light p-2 rounded-full bg-gray-900 bg-opacity-50 hover:bg-opacity-80 transition-colors duration-200 z-50 cursor-pointer"
+      >
+        &times;
+      </button>
+      <div className="p-4 max-w-[90vw] max-h-[90vh]" onClick={e => e.stopPropagation()}>
+        <img
+          src={src}
+          alt="Zoomed Screenshot"
+          className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.onerror = null; 
+            target.src = "https://placehold.co/800x600/CCCCCC/FFFFFF?text=Image+Load+Error";
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+
 // --- App Details Page Component ---
-function AppDetails({ app, onBack }: { app: App; onBack: () => void }) {
-  const handleInstallClick = (appName: string) => {
-    // Simulate a message box instead of alert()
-    console.log(`Installing ${appName}... (Simulated Installation)`);
-    // Optionally, implement a custom modal here
+function AppDetails({ 
+  app, 
+  onBack, 
+  onDeveloperClick, 
+  onImageClick,
+  isDetailVisible
+}: { 
+  app: App; 
+  onBack: () => void; 
+  onDeveloperClick: (developer: string) => void; 
+  onImageClick: (src: string) => void; 
+  isDetailVisible: boolean;
+}) {
+  
+  // Implements the specific download URL format
+  const handleInstallClick = (app: App) => {
+    const downloadUrl = `https://yqhnhdptqz5eavtl.public.blob.vercel-storage.com/${app.id}/${app.name}.app`;
+    // Open the URL in a new tab
+    window.open(downloadUrl, '_blank');
+    console.log(`Attempting to download ${app.name} from: ${downloadUrl}`);
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-6 md:p-10">
+    <div 
+      className={`max-w-7xl mx-auto p-6 md:p-10 transition-all duration-${TRANSITION_DURATION} ease-out 
+        ${isDetailVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-full'}` // Slide-in transition
+      }
+      style={{ minHeight: 'calc(100vh - 48px)' }} // Ensure it takes up enough height for transition visibility
+    >
       <button 
         onClick={onBack} 
-        // Added cursor-pointer
         className="flex items-center text-blue-600 dark:text-blue-400 mb-6 hover:underline transition-colors duration-200 cursor-pointer"
       >
         {/* Back Arrow Icon */}
@@ -108,18 +157,23 @@ function AppDetails({ app, onBack }: { app: App; onBack: () => void }) {
       {/* Main Details Section */}
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 transition-all duration-300">
         <div className="flex flex-col md:flex-row md:space-x-8">
-          <img
-            src={app.iconUrl}
-            alt={`${app.name} icon`}
-            className="w-32 h-32 rounded-3xl object-cover flex-shrink-0 mb-4 md:mb-0 shadow-lg transition-all duration-300"
-            width="128"
-            height="128"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              target.onerror = null; 
-              target.src = "https://placehold.co/128x128/CCCCCC/FFFFFF?text=Icon";
-            }}
-          />
+          <button
+             onClick={() => onImageClick(app.iconUrl)} // Clickable for zoom
+             className="p-0 border-none bg-transparent hover:opacity-80 transition-opacity duration-200 cursor-pointer"
+          >
+            <img
+              src={app.iconUrl}
+              alt={`${app.name} icon`}
+              className="w-32 h-32 rounded-3xl object-cover flex-shrink-0 mb-4 md:mb-0 shadow-lg transition-all duration-300"
+              width="128"
+              height="128"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.onerror = null; 
+                target.src = "https://placehold.co/128x128/CCCCCC/FFFFFF?text=Icon";
+              }}
+            />
+          </button>
           <div className="flex-1">
             <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white mb-2">{app.name}</h1>
             <p className="text-xl text-blue-600 dark:text-blue-400 font-semibold mb-3">{app.category}</p>
@@ -130,9 +184,8 @@ function AppDetails({ app, onBack }: { app: App; onBack: () => void }) {
             <p className="text-gray-700 dark:text-gray-300 text-lg mb-6">{app.description}</p>
             
             <button 
-              // Added cursor-pointer
               className="px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-bold text-lg rounded-xl transition-colors duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-opacity-50 cursor-pointer"
-              onClick={() => handleInstallClick(app.name)}
+              onClick={() => handleInstallClick(app)} // Use updated handler
             >
               Get App
             </button>
@@ -144,19 +197,24 @@ function AppDetails({ app, onBack }: { app: App; onBack: () => void }) {
           <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Screenshots</h2>
           <div className="flex flex-wrap gap-4 overflow-x-auto pb-4">
             {app.screenshots.map((src, index) => (
-              <img 
+              <button 
                 key={index}
-                src={src}
-                alt={`${app.name} screenshot ${index + 1}`}
-                className="w-72 h-48 rounded-lg shadow-md object-cover flex-shrink-0 transition-shadow duration-300 hover:shadow-xl"
-                width="288"
-                height="192"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.onerror = null; 
-                  target.src = "https://placehold.co/288x192/CCCCCC/FFFFFF?text=Screenshot";
-                }}
-              />
+                onClick={() => onImageClick(src)} // Clickable for zoom
+                className="p-0 border-none bg-transparent hover:opacity-80 transition-opacity duration-200 cursor-pointer"
+              >
+                <img 
+                  src={src}
+                  alt={`${app.name} screenshot ${index + 1}`}
+                  className="w-72 h-48 rounded-lg shadow-md object-cover flex-shrink-0 transition-shadow duration-300 hover:shadow-xl"
+                  width="288"
+                  height="192"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.onerror = null; 
+                    target.src = "https://placehold.co/288x192/CCCCCC/FFFFFF?text=Screenshot";
+                  }}
+                />
+              </button>
             ))}
           </div>
         </div>
@@ -168,7 +226,15 @@ function AppDetails({ app, onBack }: { app: App; onBack: () => void }) {
           </div>
           <div className="md:col-span-1 bg-gray-50 dark:bg-gray-700 p-6 rounded-xl transition-colors duration-200">
             <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Technical Details</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-300 mb-2"><strong>Developer:</strong> {app.developer}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
+              <strong>Developer:</strong> 
+              <button
+                onClick={() => onDeveloperClick(app.developer)}
+                className="text-blue-600 dark:text-blue-400 ml-1 hover:underline transition-colors duration-200 cursor-pointer"
+              >
+                {app.developer}
+              </button>
+            </p>
             <p className="text-sm text-gray-600 dark:text-gray-300 mb-2"><strong>Version:</strong> {app.version}</p>
             <p className="text-sm text-gray-600 dark:text-gray-300"><strong>Category:</strong> {app.category}</p>
           </div>
@@ -185,7 +251,39 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('Featured');
+  
+  // State for App Details view and its transition
   const [selectedApp, setSelectedApp] = useState<App | null>(null);
+  const [isDetailVisible, setIsDetailVisible] = useState(false);
+  
+  // NEW: State for filtering by developer
+  const [filterDeveloper, setFilterDeveloper] = useState<string | null>(null);
+  
+  // NEW: State for image zoom modal
+  const [zoomedImage, setZoomedImage] = useState<string | null>(null);
+
+
+  // Handlers for opening and closing the detail page with a transition
+  const handleOpenDetails = useCallback((app: App) => {
+      setSelectedApp(app);
+      // Wait for a tiny moment to ensure the component is mounted before starting the transition
+      setTimeout(() => setIsDetailVisible(true), 10); 
+  }, []);
+
+  const handleCloseDetails = useCallback(() => {
+      setIsDetailVisible(false);
+      // Wait for the transition to complete (300ms) before unmounting the component
+      setTimeout(() => setSelectedApp(null), TRANSITION_DURATION); 
+  }, []);
+
+  // Handler for clicking the developer name
+  const handleDeveloperClick = useCallback((developer: string) => {
+    setFilterDeveloper(developer);
+    setActiveTab('All Apps'); 
+    setSearchTerm('');
+    handleCloseDetails(); // Close details view after setting filter
+  }, [handleCloseDetails]);
+
 
   // 1. Data Fetching
   useEffect(() => {
@@ -236,14 +334,27 @@ export default function Home() {
       );
     }
 
+    // NEW: Filter by Developer
+    if (filterDeveloper) {
+        filtered = filtered.filter(app => app.developer === filterDeveloper);
+    }
+
     return filtered;
-  }, [apps, activeTab, searchTerm]);
+  }, [apps, activeTab, searchTerm, filterDeveloper]); // Added filterDeveloper dependency
 
   // If an app is selected, render the details page immediately
   if (selectedApp) {
     return (
-      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 font-sans transition-colors duration-300">
-        <AppDetails app={selectedApp} onBack={() => setSelectedApp(null)} />
+      // Overflow-x-hidden is crucial to prevent horizontal scroll during slide-in transition
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 font-sans transition-colors duration-300 overflow-x-hidden"> 
+        <AppDetails 
+          app={selectedApp} 
+          onBack={handleCloseDetails} // Use transition handler
+          onDeveloperClick={handleDeveloperClick}
+          onImageClick={setZoomedImage}
+          isDetailVisible={isDetailVisible}
+        />
+        {zoomedImage && <ZoomedImageModal src={zoomedImage} onClose={() => setZoomedImage(null)} />}
       </div>
     );
   }
@@ -262,7 +373,10 @@ export default function Home() {
             type="text"
             placeholder="Search apps, games, and categories..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setFilterDeveloper(null); // Clear dev filter on new search
+            }}
             className="w-full md:w-96 p-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-300"
           />
         </div>
@@ -274,8 +388,11 @@ export default function Home() {
           {TABS.map(tab => (
             <button
               key={tab}
-              onClick={() => { setActiveTab(tab); setSearchTerm(''); }}
-              // Added cursor-pointer
+              onClick={() => { 
+                setActiveTab(tab); 
+                setSearchTerm(''); 
+                setFilterDeveloper(null); // Clear dev filter on tab change
+              }}
               className={`inline-block py-3 px-4 text-sm font-medium transition-colors duration-200 border-b-2 cursor-pointer 
                 ${activeTab === tab 
                   ? 'border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400' 
@@ -289,7 +406,19 @@ export default function Home() {
       </nav>
 
       <main className="container mx-auto p-6 md:p-10">
-        <h2 className="text-3xl font-bold mb-8 capitalize">{activeTab} Apps</h2>
+        <div className="flex justify-between items-center mb-8">
+            <h2 className="text-3xl font-bold capitalize">
+                {filterDeveloper ? `Apps by ${filterDeveloper}` : `${activeTab} Apps`}
+            </h2>
+            {filterDeveloper && (
+                <button
+                    onClick={() => setFilterDeveloper(null)}
+                    className="text-sm px-3 py-1 bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition-colors duration-200 cursor-pointer"
+                >
+                    &times; Clear Developer Filter
+                </button>
+            )}
+        </div>
         
         {loading && (
           <div className="text-center text-xl text-gray-500 dark:text-gray-400 py-10">
@@ -305,18 +434,17 @@ export default function Home() {
           </div>
         )}
 
-        {/* FIX: Added Array.isArray check to prevent 'map' on undefined errors */}
         {!loading && !error && Array.isArray(filteredApps) && filteredApps.length === 0 && (
           <div className="text-center py-10 text-gray-500 dark:text-gray-400">
             <p className="text-2xl font-semibold">No results found.</p>
-            <p className="mt-2">Try a different search term or category.</p>
+            <p className="mt-2">Try a different filter or search term.</p>
           </div>
         )}
         
         {!loading && !error && Array.isArray(filteredApps) && filteredApps.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredApps.map((app) => (
-              <AppCard key={app.id} app={app} onSelect={setSelectedApp} />
+              <AppCard key={app.id} app={app} onSelect={handleOpenDetails} />
             ))}
           </div>
         )}
