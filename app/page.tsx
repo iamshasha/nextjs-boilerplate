@@ -171,8 +171,8 @@ function AppCard({ app, onSelect, onDeveloperFilter }: { app: App, onSelect: (ap
   
   return (
     <div 
-      // Confirmed: Apply Glassmorphism to the card
-      className="bg-white/70 dark:bg-gray-800/80 rounded-2xl shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-[1.03] transform cursor-pointer glass"
+      // Corrected: Apply semi-transparent background for glass effect
+      className="bg-white/70 dark:bg-gray-800/70 rounded-2xl shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-[1.03] transform cursor-pointer glass"
       onClick={() => onSelect(app)} // Click card body to open details
     >
       <div className="flex flex-col h-full p-4 space-y-3">
@@ -273,8 +273,8 @@ function AppDetails({
           Back to App Market
         </button>
 
-        {/* Main Details Section - Apply Glassmorphism */}
-        <div className="bg-white/80 dark:bg-gray-800/90 rounded-3xl shadow-2xl p-6 md:p-10 transition-all duration-300 glass">
+        {/* Main Details Section - Apply Glassmorphism with semi-transparent background */}
+        <div className="bg-white/70 dark:bg-gray-800/70 rounded-3xl shadow-2xl p-6 md:p-10 transition-all duration-300 glass">
           <div className="flex flex-col md:flex-row md:space-x-8">
             <button
               onClick={() => onImageClick(app.iconUrl)} 
@@ -361,8 +361,8 @@ function AppDetails({
               <h2 className="text-2xl font-bold mb-3 text-gray-900 dark:text-white transition-colors duration-300">About this app</h2>
               <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap transition-colors duration-300">{app.fullDescription}</p>
             </div>
-            {/* Technical Details - Apply subtle glass background to inner element */}
-            <div className="md:col-span-1 bg-gray-100/70 dark:bg-gray-700/80 p-6 rounded-xl shadow-inner transition-colors duration-300 glass">
+            {/* Technical Details - Apply semi-transparent background to inner element */}
+            <div className="md:col-span-1 bg-gray-100/70 dark:bg-gray-700/70 p-6 rounded-xl shadow-inner transition-colors duration-300 glass">
               <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white transition-colors duration-300">Technical Details</h3>
               <p className="text-sm text-gray-600 dark:text-gray-300 mb-2 transition-colors duration-300">
                 <strong>Developer:</strong> 
@@ -575,7 +575,7 @@ export default function Home() {
               /* Optional: subtle border for glass look */
               border: 1px solid rgba(255, 255, 255, 0.2); 
           }
-          /* Ensure a background is present for blur to work */
+          /* Ensure a background is present for blur to work. This is the main page background. */
           body {
             background-color: #f7f7fa; /* Light base */
             background-image: linear-gradient(135deg, #f7f7fa 0%, #e0e0e8 100%);
@@ -589,8 +589,8 @@ export default function Home() {
       {/* Main Content (Always visible) */}
       <div className={`transition-all duration-[${TRANSITION_DURATION_MS}ms] ease-out ${selectedApp ? 'opacity-30 pointer-events-none scale-[0.98]' : 'opacity-100 scale-100'}`}>
         
-        {/* Header and Search Bar - Apply Glassmorphism */}
-        <header className="bg-white/70 dark:bg-gray-800/80 shadow-lg sticky top-0 z-10 transition-colors duration-300 glass">
+        {/* Header and Search Bar - Apply Glassmorphism with semi-transparent background */}
+        <header className="bg-white/70 dark:bg-gray-800/70 shadow-lg sticky top-0 z-10 transition-colors duration-300 glass">
           <div className="container mx-auto px-6 py-4 flex flex-col md:flex-row md:items-center justify-between">
             <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600 mb-3 md:mb-0 transition-colors duration-300">
               App Store
@@ -600,13 +600,14 @@ export default function Home() {
               placeholder="Search apps, developers, and categories..."
               value={urlState.search}
               onChange={(e) => updateUrl({ search: e.target.value })}
-              className="w-full md:w-96 p-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700/80 dark:text-white transition-all duration-300 shadow-inner glass"
+              // Corrected: Apply semi-transparent background for search input
+              className="w-full md:w-96 p-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700/70 dark:text-white transition-all duration-300 shadow-inner glass"
             />
           </div>
         </header>
 
-        {/* Tabs Navigation (With Icons) - Apply Glassmorphism */}
-        <nav className="bg-white/70 dark:bg-gray-800/80 border-b border-gray-200 dark:border-gray-700 sticky top-[72px] md:top-[76px] z-10 transition-colors duration-300 glass">
+        {/* Tabs Navigation (With Icons) - Apply Glassmorphism with semi-transparent background */}
+        <nav className="bg-white/70 dark:bg-gray-800/70 border-b border-gray-200 dark:border-gray-700 sticky top-[72px] md:top-[76px] z-10 transition-colors duration-300 glass">
           <div className="container mx-auto px-6 overflow-x-auto whitespace-nowrap py-1"> 
             {TABS.map(tab => (
               <button
