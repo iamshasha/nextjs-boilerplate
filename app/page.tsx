@@ -171,7 +171,8 @@ function AppCard({ app, onSelect, onDeveloperFilter }: { app: App, onSelect: (ap
   
   return (
     <div 
-      className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-[1.03] transform cursor-pointer"
+      // Apply Glassmorphism
+      className="bg-white/70 dark:bg-gray-800/80 rounded-2xl shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-[1.03] transform cursor-pointer glass"
       onClick={() => onSelect(app)} // Click card body to open details
     >
       <div className="flex flex-col h-full p-4 space-y-3">
@@ -187,7 +188,7 @@ function AppCard({ app, onSelect, onDeveloperFilter }: { app: App, onSelect: (ap
           <div className="flex-1 min-w-0">
             <h3 className="text-xl font-bold text-gray-900 dark:text-white truncate transition-colors duration-300">{app.name}</h3>
             
-            {/* Clickable Developer Name (replaces category tag) */}
+            {/* Clickable Developer Name (filter trigger) */}
             <button 
                 onClick={(e) => {
                     e.stopPropagation(); // Prevent card click from opening details
@@ -259,7 +260,7 @@ function AppDetails({
   return (
     // The details panel is styled to ensure background neutrality is maintained (no specific background applied here)
     <div 
-      className={`fixed inset-0 z-20 h-screen overflow-y-auto transition-all duration-[${TRANSITION_DURATION_MS}ms] ease-out bg-white dark:bg-gray-900 
+      className={`fixed inset-0 z-20 h-screen overflow-y-auto transition-all duration-[${TRANSITION_DURATION_MS}ms] ease-out bg-gray-50 dark:bg-gray-900 
         ${isMounted ? 'translate-x-0' : 'translate-x-full'}`} // Slide-in transition
     >
       <div className="max-w-7xl mx-auto p-6 md:p-10 min-h-full">
@@ -272,8 +273,8 @@ function AppDetails({
           Back to App Market
         </button>
 
-        {/* Main Details Section */}
-        <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-6 md:p-10 transition-all duration-300">
+        {/* Main Details Section - Apply Glassmorphism */}
+        <div className="bg-white/80 dark:bg-gray-800/90 rounded-3xl shadow-2xl p-6 md:p-10 transition-all duration-300 glass">
           <div className="flex flex-col md:flex-row md:space-x-8">
             <button
               onClick={() => onImageClick(app.iconUrl)} 
@@ -360,7 +361,8 @@ function AppDetails({
               <h2 className="text-2xl font-bold mb-3 text-gray-900 dark:text-white transition-colors duration-300">About this app</h2>
               <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap transition-colors duration-300">{app.fullDescription}</p>
             </div>
-            <div className="md:col-span-1 bg-gray-50 dark:bg-gray-700 p-6 rounded-xl shadow-inner transition-colors duration-300">
+            {/* Technical Details - Apply subtle glass background */}
+            <div className="md:col-span-1 bg-gray-100/70 dark:bg-gray-700/80 p-6 rounded-xl shadow-inner transition-colors duration-300 glass">
               <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white transition-colors duration-300">Technical Details</h3>
               <p className="text-sm text-gray-600 dark:text-gray-300 mb-2 transition-colors duration-300">
                 <strong>Developer:</strong> 
@@ -417,21 +419,20 @@ export default function Home() {
     const currentState = getUrlState();
     let mergedState = { ...currentState, ...newState };
 
-    // 1. Handle App Details View (Highest priority)
+    // 1. Handle App Details View
     if (newState.appId !== undefined) {
       if (newState.appId !== null) {
         mergedState.search = '';
         mergedState.dev = null;
       } else {
-        mergedState.appId = null; // Going back from details
+        mergedState.appId = null; 
       }
     }
     
-    // 2. Handle Developer Filter
+    // 2. Handle Developer Filter (High Priority)
     if (newState.dev !== undefined) {
       if (newState.dev !== null) {
-        // When setting developer filter, force tab to 'All Apps' and clear search/appId
-        mergedState.tab = 'All Apps';
+        mergedState.tab = 'All Apps'; // Force tab to All Apps when a developer is filtered
         mergedState.appId = null;
         mergedState.search = '';
       } else {
@@ -443,8 +444,10 @@ export default function Home() {
     if (newState.tab !== undefined) {
       mergedState.appId = null;
       mergedState.search = '';
-      if (!newState.dev) { // Only clear dev filter if explicitly changing tabs (and dev wasn't set)
-          mergedState.dev = null; 
+      // Only clear developer filter if we are explicitly switching tabs 
+      // AND a new developer filter wasn't simultaneously requested.
+      if (newState.dev === undefined || newState.dev === null) {
+          mergedState.dev = null;
       }
     }
     
@@ -460,8 +463,8 @@ export default function Home() {
     if (mergedState.tab && mergedState.tab !== 'Featured') newParams.set('tab', mergedState.tab);
     if (mergedState.search) newParams.set('search', mergedState.search);
     if (mergedState.appId) newParams.set('appId', mergedState.appId.toString());
-    if (mergedState.dev) newParams.set('dev', mergedState.dev);
-
+    if (mergedState.dev) newParams.set('dev', mergedState.dev); // Developer filter parameter
+    
     const newUrl = `${window.location.pathname}${newParams.toString() ? '?' + newParams.toString() : ''}`;
     window.history.pushState(mergedState, '', newUrl);
     setUrlState(mergedState);
@@ -554,16 +557,23 @@ export default function Home() {
   // --- Main Render Logic ---
 
   return (
-    // Note: The top-level div has no specific background color (bg-*) defined here,
-    // ensuring background neutrality as requested.
     <div className="min-h-screen text-gray-900 dark:text-gray-100 font-sans relative overflow-x-hidden">
       
+      {/* Custom CSS for Glassmorphism */}
+      <style>{`
+          .glass {
+              backdrop-filter: blur(12px);
+              -webkit-backdrop-filter: blur(12px);
+              /* Optional: subtle border for glass look */
+              border: 1px solid rgba(255, 255, 255, 0.2); 
+          }
+      `}</style>
+      
       {/* Main Content (Always visible) */}
-      {/* Added transition for when the details panel slides in */}
       <div className={`transition-all duration-[${TRANSITION_DURATION_MS}ms] ease-out ${selectedApp ? 'opacity-30 pointer-events-none scale-[0.98]' : 'opacity-100 scale-100'}`}>
         
-        {/* Header and Search Bar */}
-        <header className="bg-white dark:bg-gray-800 shadow-lg sticky top-0 z-10 transition-colors duration-300">
+        {/* Header and Search Bar - Apply Glassmorphism */}
+        <header className="bg-white/70 dark:bg-gray-800/80 shadow-lg sticky top-0 z-10 transition-colors duration-300 glass">
           <div className="container mx-auto px-6 py-4 flex flex-col md:flex-row md:items-center justify-between">
             <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600 mb-3 md:mb-0 transition-colors duration-300">
               App Store
@@ -573,13 +583,13 @@ export default function Home() {
               placeholder="Search apps, developers, and categories..."
               value={urlState.search}
               onChange={(e) => updateUrl({ search: e.target.value })}
-              className="w-full md:w-96 p-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-300 shadow-inner"
+              className="w-full md:w-96 p-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700/80 dark:text-white transition-all duration-300 shadow-inner glass"
             />
           </div>
         </header>
 
-        {/* Tabs Navigation (With Icons) */}
-        <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-[72px] md:top-[76px] z-10 transition-colors duration-300">
+        {/* Tabs Navigation (With Icons) - Apply Glassmorphism */}
+        <nav className="bg-white/70 dark:bg-gray-800/80 border-b border-gray-200 dark:border-gray-700 sticky top-[72px] md:top-[76px] z-10 transition-colors duration-300 glass">
           <div className="container mx-auto px-6 overflow-x-auto whitespace-nowrap py-1"> 
             {TABS.map(tab => (
               <button
@@ -604,22 +614,23 @@ export default function Home() {
         <main className="container mx-auto p-6 md:p-10">
           <div className="flex justify-between items-center mb-8 transition-all duration-300">
               <h2 className="text-3xl font-bold capitalize transition-colors duration-300">
-                  {/* Updated title to reflect developer filter accurately */}
+                  {/* Title updated based on active filter */}
                   {urlState.dev ? `Apps by ${urlState.dev}` : `${urlState.tab} Apps`}
               </h2>
               {urlState.dev && (
                   <button
+                      // Use updateUrl to explicitly clear the dev filter
                       onClick={() => updateUrl({ dev: null, tab: 'All Apps' })}
                       className="text-sm px-3 py-1 bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition-all duration-200 cursor-pointer hover:shadow-sm transform hover:scale-[1.05]"
                   >
-                      &times; Clear Filter
+                      &times; Clear {urlState.dev} Filter
                   </button>
               )}
           </div>
           
           {/* Wrapper for transition when content changes (tab/search/dev) */}
           <div 
-            key={`${urlState.tab}-${urlState.search}-${urlState.dev}`} // Key change triggers remount/transition
+            key={`${urlState.tab}-${urlState.search}-${urlState.dev}`} 
             className="animate-fade-in transition-opacity duration-300 ease-in-out" 
             style={{ 
               animationName: 'fade-in',
