@@ -4,7 +4,8 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 
 // --- Utility Functions for Inline SVG Icons (Mimicking Font Awesome) ---
 const Icon = ({ name, className = 'w-5 h-5' }: { name: string, className?: string }) => {
-  const iconMap: { [key: string]: JSX.Element } = {
+  // FIX: Changed JSX.Element to React.JSX.Element for correct TypeScript scoping
+  const iconMap: { [key: string]: React.JSX.Element } = {
     // Nav Icons
     'Featured': <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.875 1.577c-.503-.956-1.89-.956-2.392 0l-1.325 2.502-2.73 4.279c-.56.883-.105 1.95 1.055 2.05l2.25.213L9 16l-1.125-1.956c-.502-.871-1.748-.871-2.25 0L4.5 16l-1.125-1.956c-.502-.871-1.748-.871-2.25 0L0 16.044V22c0 1.104.896 2 2 2h20c1.104 0 2-.896 2-2V16.044l-1.125-1.956c-.502-.871-1.748-.871-2.25 0L19.5 16l-1.125-1.956c-.502-.871-1.748-.871-2.25 0L15 16l-1.125-1.956c-.502-.871-1.748-.871-2.25 0L10.875 16l-1.125-1.956c-.502-.871-1.748-.871-2.25 0L7.5 16.044z"/><path d="M12 21c-4.97 0-9-4.03-9-9s4.03-9 9-9 9 4.03 9 9-4.03 9-9 9z" opacity=".25" fill="currentColor"/><path d="M12 17c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5z" fill="currentColor"/></svg>,
     'All Apps': <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>,
@@ -256,9 +257,9 @@ function AppDetails({
   };
 
   return (
-    // Removed bg-gray-100 dark:bg-gray-900 to ensure background neutrality
+    // The details panel is styled to ensure background neutrality is maintained (no specific background applied here)
     <div 
-      className={`fixed inset-0 z-20 h-screen overflow-y-auto transition-all duration-[${TRANSITION_DURATION_MS}ms] ease-out 
+      className={`fixed inset-0 z-20 h-screen overflow-y-auto transition-all duration-[${TRANSITION_DURATION_MS}ms] ease-out bg-white dark:bg-gray-900 
         ${isMounted ? 'translate-x-0' : 'translate-x-full'}`} // Slide-in transition
     >
       <div className="max-w-7xl mx-auto p-6 md:p-10 min-h-full">
@@ -303,7 +304,7 @@ function AppDetails({
               <p className="text-gray-700 dark:text-gray-300 text-lg mb-6 transition-colors duration-300">{app.description}</p>
               
               <div className="flex flex-wrap gap-4 items-center">
-                {/* NEW: Download Button with Loading State */}
+                {/* Download Button with Loading State */}
                 <button 
                   className={`px-8 py-3 font-bold text-lg rounded-xl transition-all duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-opacity-50 cursor-pointer flex items-center justify-center space-x-2 
                     ${isDownloading 
@@ -553,7 +554,8 @@ export default function Home() {
   // --- Main Render Logic ---
 
   return (
-    // Removed specific background colors for host environment neutrality
+    // Note: The top-level div has no specific background color (bg-*) defined here,
+    // ensuring background neutrality as requested.
     <div className="min-h-screen text-gray-900 dark:text-gray-100 font-sans relative overflow-x-hidden">
       
       {/* Main Content (Always visible) */}
@@ -615,7 +617,7 @@ export default function Home() {
               )}
           </div>
           
-          {/* NEW: Wrapper for transition when content changes (tab/search/dev) */}
+          {/* Wrapper for transition when content changes (tab/search/dev) */}
           <div 
             key={`${urlState.tab}-${urlState.search}-${urlState.dev}`} // Key change triggers remount/transition
             className="animate-fade-in transition-opacity duration-300 ease-in-out" 
