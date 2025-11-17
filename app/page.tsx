@@ -12,7 +12,7 @@ const Icon = ({ name, className = 'w-5 h-5' }: { name: string, className?: strin
     'Productivity': <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 17h5l-5-5V7c0-2.209-1.791-4-4-4s-4 1.791-4 4v5l-5 5h5l1-1h6l1 1zM9 7h6"/></svg>,
     'Finance': <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8H8M12 6v12M12 18a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3z"/></svg>,
     'Graphics & Design': <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9M12 4v16M16 4h-4M8 4H3M4 16h4M16 8h4M4 8h8M16 12h5M4 12h8M16 16h4M4 20h4"/></svg>,
-    'Music & Audio': <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18V5l12-2v13M15 13a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM4 18a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/></svg>,
+    'Music & Audio': <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18V5l12-2v13M15 13a4 0 1 0 0 8 4 4 0 0 0 0-8zM4 18a4 0 1 0 0 8 4 4 0 0 0 0-8z"/></svg>,
     'Health & Fitness': <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>,
     'Developer Tools': <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/><line x1="10" y1="2" x2="14" y2="22"/></svg>,
     'Books & Reference': <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 9V7c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-2M7 5v14M11 5v14M15 5v14"/></svg>,
@@ -171,7 +171,7 @@ function AppCard({ app, onSelect, onDeveloperFilter }: { app: App, onSelect: (ap
   
   return (
     <div 
-      // Apply Glassmorphism
+      // Confirmed: Apply Glassmorphism to the card
       className="bg-white/70 dark:bg-gray-800/80 rounded-2xl shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-[1.03] transform cursor-pointer glass"
       onClick={() => onSelect(app)} // Click card body to open details
     >
@@ -258,9 +258,9 @@ function AppDetails({
   };
 
   return (
-    // The details panel is styled to ensure background neutrality is maintained (no specific background applied here)
+    // Outer Container (The one that slides in) - Changed background for better blur contrast
     <div 
-      className={`fixed inset-0 z-20 h-screen overflow-y-auto transition-all duration-[${TRANSITION_DURATION_MS}ms] ease-out bg-gray-50 dark:bg-gray-900 
+      className={`fixed inset-0 z-20 h-screen overflow-y-auto transition-all duration-[${TRANSITION_DURATION_MS}ms] ease-out bg-gray-100 dark:bg-gray-950 
         ${isMounted ? 'translate-x-0' : 'translate-x-full'}`} // Slide-in transition
     >
       <div className="max-w-7xl mx-auto p-6 md:p-10 min-h-full">
@@ -361,7 +361,7 @@ function AppDetails({
               <h2 className="text-2xl font-bold mb-3 text-gray-900 dark:text-white transition-colors duration-300">About this app</h2>
               <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap transition-colors duration-300">{app.fullDescription}</p>
             </div>
-            {/* Technical Details - Apply subtle glass background */}
+            {/* Technical Details - Apply subtle glass background to inner element */}
             <div className="md:col-span-1 bg-gray-100/70 dark:bg-gray-700/80 p-6 rounded-xl shadow-inner transition-colors duration-300 glass">
               <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white transition-colors duration-300">Technical Details</h3>
               <p className="text-sm text-gray-600 dark:text-gray-300 mb-2 transition-colors duration-300">
@@ -414,22 +414,22 @@ export default function Home() {
 
   const [urlState, setUrlState] = useState(getUrlState());
 
-  // 2. Function to update URL and internal state
+  // 2. Function to update URL and internal state (Improved precedence logic for dev filter)
   const updateUrl = useCallback((newState: Partial<typeof urlState>) => {
-    const currentState = getUrlState();
-    let mergedState = { ...currentState, ...newState };
+    let mergedState = { ...getUrlState(), ...newState };
 
-    // 1. Handle App Details View
+    // 1. Handle App Details View (Highest Priority: Clears search/dev)
     if (newState.appId !== undefined) {
       if (newState.appId !== null) {
         mergedState.search = '';
         mergedState.dev = null;
+        // Keep tab for back navigation context
       } else {
         mergedState.appId = null; 
       }
     }
     
-    // 2. Handle Developer Filter (High Priority)
+    // 2. Handle Developer Filter (Second Highest Priority: Clears search/appId)
     if (newState.dev !== undefined) {
       if (newState.dev !== null) {
         mergedState.tab = 'All Apps'; // Force tab to All Apps when a developer is filtered
@@ -440,30 +440,38 @@ export default function Home() {
       }
     }
 
-    // 3. Handle Tab/Category Change
-    if (newState.tab !== undefined) {
-      mergedState.appId = null;
-      mergedState.search = '';
-      // Only clear developer filter if we are explicitly switching tabs 
-      // AND a new developer filter wasn't simultaneously requested.
-      if (newState.dev === undefined || newState.dev === null) {
+    // 3. Handle Search Change (Third Priority: Clears appId/dev)
+    if (newState.search !== undefined) {
+      if (newState.search !== '') {
+          mergedState.appId = null;
           mergedState.dev = null;
       }
     }
     
-    // 4. Handle Search Change
-    if (newState.search !== undefined) {
+    // 4. Handle Tab/Category Change (Lowest Priority: Clears search/appId, but respects the current active dev state unless explicitly cleared)
+    if (newState.tab !== undefined) {
       mergedState.appId = null;
-      mergedState.dev = null;
+      mergedState.search = '';
+      // If we are actively changing the tab (not via dev filter activation), clear the dev filter.
+      if (newState.dev === undefined && mergedState.dev) {
+          mergedState.dev = null;
+      }
     }
 
 
     // Build the URL
     const newParams = new URLSearchParams();
-    if (mergedState.tab && mergedState.tab !== 'Featured') newParams.set('tab', mergedState.tab);
+    // Developer filter has precedence in the URL parameters
+    if (mergedState.dev) {
+        newParams.set('dev', mergedState.dev);
+        // Only set the tab to 'All Apps' if dev filter is active (as per logic)
+        newParams.set('tab', 'All Apps');
+    } else {
+        if (mergedState.tab && mergedState.tab !== 'Featured') newParams.set('tab', mergedState.tab);
+    }
+
     if (mergedState.search) newParams.set('search', mergedState.search);
     if (mergedState.appId) newParams.set('appId', mergedState.appId.toString());
-    if (mergedState.dev) newParams.set('dev', mergedState.dev); // Developer filter parameter
     
     const newUrl = `${window.location.pathname}${newParams.toString() ? '?' + newParams.toString() : ''}`;
     window.history.pushState(mergedState, '', newUrl);
@@ -514,7 +522,7 @@ export default function Home() {
 
     const { tab, search, dev } = urlState;
 
-    // Filter by Developer first (highest priority filter)
+    // Filter by Developer first (Highest Priority Filter using 'dev' parameter)
     if (dev) {
         filtered = filtered.filter(app => app.developer === dev);
     } 
@@ -549,7 +557,7 @@ export default function Home() {
   // --- Handlers ---
 
   const handleDeveloperClick = useCallback((developer: string) => {
-    // Reset all other states and set the developer filter
+    // This is the special action that sets the 'dev' parameter and ensures state consistency
     updateUrl({ dev: developer, appId: null, search: '', tab: 'All Apps' });
   }, [updateUrl]);
 
@@ -566,6 +574,15 @@ export default function Home() {
               -webkit-backdrop-filter: blur(12px);
               /* Optional: subtle border for glass look */
               border: 1px solid rgba(255, 255, 255, 0.2); 
+          }
+          /* Ensure a background is present for blur to work */
+          body {
+            background-color: #f7f7fa; /* Light base */
+            background-image: linear-gradient(135deg, #f7f7fa 0%, #e0e0e8 100%);
+            @media (prefers-color-scheme: dark) {
+                background-color: #121212; /* Dark base */
+                background-image: linear-gradient(135deg, #121212 0%, #1c1c1c 100%);
+            }
           }
       `}</style>
       
@@ -594,16 +611,20 @@ export default function Home() {
             {TABS.map(tab => (
               <button
                 key={tab}
+                // Check if the current tab should be active, respecting the dev filter precedence
                 onClick={() => updateUrl({ tab })}
                 className={`inline-flex items-center space-x-2 py-3 px-4 text-sm font-medium transition-all duration-300 border-b-2 cursor-pointer transform hover:scale-[1.03] 
-                  ${urlState.tab === tab && !urlState.dev
+                  ${(urlState.dev === null && urlState.tab === tab) || (urlState.dev && tab === 'All Apps') // Highlight 'All Apps' when dev filter is on
                     ? 'border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400 font-bold' 
                     : 'border-transparent text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:border-gray-300'}`
                 }
+                // Disable explicit tab changes if a developer filter is active, forcing the user to clear it first, improving UX flow.
+                disabled={!!urlState.dev && tab !== 'All Apps'}
+                title={!!urlState.dev && tab !== 'All Apps' ? `Clear ${urlState.dev} filter to switch tabs` : tab}
               >
                 <Icon 
                   name={tab} 
-                  className={`w-4 h-4 transition-colors duration-300 ${urlState.tab === tab && !urlState.dev ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`} 
+                  className={`w-4 h-4 transition-colors duration-300 ${(urlState.dev === null && urlState.tab === tab) || (urlState.dev && tab === 'All Apps') ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`} 
                 />
                 <span>{tab}</span>
               </button>
@@ -614,7 +635,7 @@ export default function Home() {
         <main className="container mx-auto p-6 md:p-10">
           <div className="flex justify-between items-center mb-8 transition-all duration-300">
               <h2 className="text-3xl font-bold capitalize transition-colors duration-300">
-                  {/* Title updated based on active filter */}
+                  {/* Title updated based on active filter (dev filter has precedence) */}
                   {urlState.dev ? `Apps by ${urlState.dev}` : `${urlState.tab} Apps`}
               </h2>
               {urlState.dev && (
