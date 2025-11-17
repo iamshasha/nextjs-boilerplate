@@ -2,6 +2,30 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 
+// --- Utility Functions for Inline SVG Icons (Mimicking Font Awesome) ---
+const Icon = ({ name, className = 'w-5 h-5' }: { name: string, className?: string }) => {
+  const iconMap: { [key: string]: JSX.Element } = {
+    // Nav Icons
+    'Featured': <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.875 1.577c-.503-.956-1.89-.956-2.392 0l-1.325 2.502-2.73 4.279c-.56.883-.105 1.95 1.055 2.05l2.25.213L9 16l-1.125-1.956c-.502-.871-1.748-.871-2.25 0L4.5 16l-1.125-1.956c-.502-.871-1.748-.871-2.25 0L0 16.044V22c0 1.104.896 2 2 2h20c1.104 0 2-.896 2-2V16.044l-1.125-1.956c-.502-.871-1.748-.871-2.25 0L19.5 16l-1.125-1.956c-.502-.871-1.748-.871-2.25 0L15 16l-1.125-1.956c-.502-.871-1.748-.871-2.25 0L10.875 16l-1.125-1.956c-.502-.871-1.748-.871-2.25 0L7.5 16.044z"/><path d="M12 21c-4.97 0-9-4.03-9-9s4.03-9 9-9 9 4.03 9 9-4.03 9-9 9z" opacity=".25" fill="currentColor"/><path d="M12 17c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5z" fill="currentColor"/></svg>,
+    'All Apps': <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>,
+    'Productivity': <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 17h5l-5-5V7c0-2.209-1.791-4-4-4s-4 1.791-4 4v5l-5 5h5l1-1h6l1 1zM9 7h6"/></svg>,
+    'Finance': <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8H8M12 6v12M12 18a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3z"/></svg>,
+    'Graphics & Design': <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9M12 4v16M16 4h-4M8 4H3M4 16h4M16 8h4M4 8h8M16 12h5M4 12h8M16 16h4M4 20h4"/></svg>,
+    'Music & Audio': <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18V5l12-2v13M15 13a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM4 18a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/></svg>,
+    'Health & Fitness': <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>,
+    'Developer Tools': <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/><line x1="10" y1="2" x2="14" y2="22"/></svg>,
+    'Books & Reference': <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 9V7c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-2M7 5v14M11 5v14M15 5v14"/></svg>,
+    'Food & Drink': <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3h7v11H3V3zM14 14h7v7h-7v-7zM14 3h7v7h-7V3zM3 18h7v3H3v-3z"/></svg>,
+    
+    // Share Icon
+    'Share': <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+  };
+
+  const selectedIcon = iconMap[name] || <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/></svg>;
+  
+  return React.cloneElement(selectedIcon, { className });
+};
+
 // --- TypeScript Interface for our App data ---
 interface App {
   id: number;
@@ -19,7 +43,7 @@ interface App {
 // --- Constants ---
 const ALL_CATEGORIES = ['Productivity', 'Finance', 'Graphics & Design', 'Music & Audio', 'Health & Fitness', 'Developer Tools', 'Books & Reference', 'Food & Drink'];
 const TABS = ['Featured', 'All Apps', ...ALL_CATEGORIES];
-const TRANSITION_DURATION_MS = 400;
+const TRANSITION_DURATION_MS = 400; // For Details Slide-in
 
 // --- Helper Component for Star Ratings ---
 function StarRating({ rating, size = 'w-4 h-4' }: { rating: number, size?: string }) {
@@ -123,12 +147,12 @@ function ShareButton({ app }: { app: App }) {
         className="px-6 py-3 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 font-bold rounded-xl transition-all duration-200 hover:bg-blue-200 dark:hover:bg-blue-800 shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50 cursor-pointer flex items-center space-x-2"
         title={`Share ${app.name}`}
       >
-        {/* Share Icon */}
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        {/* Updated Share Icon */}
+        <Icon name="Share" className="w-5 h-5"/>
         <span className="hidden sm:inline">Share</span>
       </button>
       {shareMessage && (
-        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 p-2 bg-green-500 text-white text-xs rounded-lg shadow-xl animate-bounce-in z-30 opacity-100 transition-opacity duration-300 whitespace-nowrap">
+        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 p-2 bg-green-500 text-white text-xs rounded-lg shadow-xl z-30 opacity-100 transition-opacity duration-300 whitespace-nowrap">
           {shareMessage}
         </div>
       )}
@@ -199,28 +223,45 @@ function AppDetails({
 }) {
   
   const [isMounted, setIsMounted] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false); // NEW: Download state
 
   useEffect(() => {
     // Start the slide-in transition on mount
     setIsMounted(true);
-    return () => setIsMounted(false);
+    // Optional: Hide scrollbar of the main window when mounted
+    document.body.style.overflow = 'hidden';
+    return () => {
+      setIsMounted(false);
+      document.body.style.overflow = '';
+    };
   }, []);
 
   // Implements the specific download URL format
   const handleInstallClick = (app: App) => {
-    // Sanitize name for URL: replace spaces with '_' and remove non-alphanumeric/non-dash characters
+    if (isDownloading) return;
+
+    setIsDownloading(true); // Start loading
+
     const sanitizedName = app.name.replace(/ /g, '_').replace(/[^\w-]/g, ''); 
     const downloadUrl = `https://yqhnhdptqz5eavtl.public.blob.vercel-storage.com/${app.id}/${sanitizedName}.app`;
+    
+    // Open the new window immediately
     window.open(downloadUrl, '_blank');
     console.log(`Attempting to download ${app.name} from: ${downloadUrl}`);
+
+    // Stop loading after a short delay (1 second for visual feedback)
+    setTimeout(() => {
+      setIsDownloading(false);
+    }, 1000); 
   };
 
   return (
+    // Removed bg-gray-100 dark:bg-gray-900 to ensure background neutrality
     <div 
-      className={`fixed inset-0 z-20 min-h-screen bg-gray-100 dark:bg-gray-900 transition-all duration-[${TRANSITION_DURATION_MS}ms] ease-out 
+      className={`fixed inset-0 z-20 h-screen overflow-y-auto transition-all duration-[${TRANSITION_DURATION_MS}ms] ease-out 
         ${isMounted ? 'translate-x-0' : 'translate-x-full'}`} // Slide-in transition
     >
-      <div className="max-w-7xl mx-auto p-6 md:p-10">
+      <div className="max-w-7xl mx-auto p-6 md:p-10 min-h-full">
         <button 
           onClick={onBack} 
           className="flex items-center text-blue-600 dark:text-blue-400 mb-6 hover:underline transition-colors duration-200 cursor-pointer transform hover:scale-[1.05]"
@@ -262,11 +303,24 @@ function AppDetails({
               <p className="text-gray-700 dark:text-gray-300 text-lg mb-6 transition-colors duration-300">{app.description}</p>
               
               <div className="flex flex-wrap gap-4 items-center">
+                {/* NEW: Download Button with Loading State */}
                 <button 
-                  className="px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-bold text-lg rounded-xl transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-opacity-50 cursor-pointer"
+                  className={`px-8 py-3 font-bold text-lg rounded-xl transition-all duration-200 shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-opacity-50 cursor-pointer flex items-center justify-center space-x-2 
+                    ${isDownloading 
+                        ? 'bg-gray-400 text-gray-800 dark:bg-gray-600 dark:text-gray-200' // Loading style
+                        : 'bg-green-600 hover:bg-green-700 text-white focus:ring-green-500' // Normal style
+                    }`}
                   onClick={() => handleInstallClick(app)}
+                  disabled={isDownloading}
                 >
-                  Get App
+                  {isDownloading ? (
+                      <>
+                          <div className="animate-spin inline-block w-5 h-5 border-2 border-t-2 border-white border-opacity-75 rounded-full"></div>
+                          <span>Preparing...</span>
+                      </>
+                  ) : (
+                      <span>Get App</span>
+                  )}
                 </button>
                 <ShareButton app={app} /> {/* Share Button Component */}
               </div>
@@ -322,6 +376,8 @@ function AppDetails({
           </div>
         </div>
       </div>
+      {/* Footer to ensure the last content isn't cut off by the viewport bottom */}
+      <div className="h-10"></div> 
     </div>
   );
 }
@@ -358,28 +414,47 @@ export default function Home() {
   // 2. Function to update URL and internal state
   const updateUrl = useCallback((newState: Partial<typeof urlState>) => {
     const currentState = getUrlState();
-    const mergedState = { ...currentState, ...newState };
+    let mergedState = { ...currentState, ...newState };
 
-    // Logic to clear conflicting states when setting a new primary state
+    // 1. Handle App Details View (Highest priority)
     if (newState.appId !== undefined) {
-      mergedState.search = '';
-      mergedState.dev = null;
+      if (newState.appId !== null) {
+        mergedState.search = '';
+        mergedState.dev = null;
+      } else {
+        mergedState.appId = null; // Going back from details
+      }
     }
-    if (newState.dev !== undefined && newState.dev !== null) {
+    
+    // 2. Handle Developer Filter
+    if (newState.dev !== undefined) {
+      if (newState.dev !== null) {
+        // When setting developer filter, force tab to 'All Apps' and clear search/appId
         mergedState.tab = 'All Apps';
         mergedState.appId = null;
         mergedState.search = '';
-    }
-    if (newState.tab !== undefined && newState.tab !== mergedState.tab) {
-        mergedState.appId = null;
-        mergedState.dev = null;
-        mergedState.search = '';
-    }
-    if (newState.search !== undefined) {
-        mergedState.appId = null;
-        mergedState.dev = null;
+      } else {
+        mergedState.dev = null; // Clearing developer filter
+      }
     }
 
+    // 3. Handle Tab/Category Change
+    if (newState.tab !== undefined) {
+      mergedState.appId = null;
+      mergedState.search = '';
+      if (!newState.dev) { // Only clear dev filter if explicitly changing tabs (and dev wasn't set)
+          mergedState.dev = null; 
+      }
+    }
+    
+    // 4. Handle Search Change
+    if (newState.search !== undefined) {
+      mergedState.appId = null;
+      mergedState.dev = null;
+    }
+
+
+    // Build the URL
     const newParams = new URLSearchParams();
     if (mergedState.tab && mergedState.tab !== 'Featured') newParams.set('tab', mergedState.tab);
     if (mergedState.search) newParams.set('search', mergedState.search);
@@ -408,6 +483,7 @@ export default function Home() {
 
     const fetchApps = async () => {
       try {
+        // NOTE: This assumes 'applist.json' is available in the public directory
         const response = await fetch('/applist.json'); 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -438,7 +514,7 @@ export default function Home() {
     if (dev) {
         filtered = filtered.filter(app => app.developer === dev);
     } 
-    // Filter by Tab/Category
+    // Filter by Tab/Category (Only if NO developer filter is active)
     else if (tab !== 'All Apps' && tab !== 'Featured') {
       filtered = filtered.filter(app => app.category === tab);
     } else if (tab === 'Featured') {
@@ -452,7 +528,7 @@ export default function Home() {
       filtered = filtered.filter(app => 
         app.name.toLowerCase().includes(lowerCaseSearch) ||
         app.description.toLowerCase().includes(lowerCaseSearch) ||
-        app.developer.toLowerCase().includes(lowerCaseSearch) || // Search by developer name too
+        app.developer.toLowerCase().includes(lowerCaseSearch) ||
         app.category.toLowerCase().includes(lowerCaseSearch)
       );
     }
@@ -469,17 +545,19 @@ export default function Home() {
   // --- Handlers ---
 
   const handleDeveloperClick = useCallback((developer: string) => {
-    updateUrl({ dev: developer, appId: null, search: '' });
+    // Reset all other states and set the developer filter
+    updateUrl({ dev: developer, appId: null, search: '', tab: 'All Apps' });
   }, [updateUrl]);
 
 
   // --- Main Render Logic ---
 
   return (
-    // Relative position and overflow-x-hidden are essential for the absolute positioning and slide transition
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans relative overflow-x-hidden">
+    // Removed specific background colors for host environment neutrality
+    <div className="min-h-screen text-gray-900 dark:text-gray-100 font-sans relative overflow-x-hidden">
       
       {/* Main Content (Always visible) */}
+      {/* Added transition for when the details panel slides in */}
       <div className={`transition-all duration-[${TRANSITION_DURATION_MS}ms] ease-out ${selectedApp ? 'opacity-30 pointer-events-none scale-[0.98]' : 'opacity-100 scale-100'}`}>
         
         {/* Header and Search Bar */}
@@ -498,20 +576,24 @@ export default function Home() {
           </div>
         </header>
 
-        {/* Tabs Navigation */}
+        {/* Tabs Navigation (With Icons) */}
         <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-[72px] md:top-[76px] z-10 transition-colors duration-300">
-          <div className="container mx-auto px-6 overflow-x-auto whitespace-nowrap scrollbar-hide">
+          <div className="container mx-auto px-6 overflow-x-auto whitespace-nowrap py-1"> 
             {TABS.map(tab => (
               <button
                 key={tab}
                 onClick={() => updateUrl({ tab })}
-                className={`inline-block py-3 px-4 text-sm font-medium transition-all duration-300 border-b-2 cursor-pointer transform hover:scale-[1.05] 
+                className={`inline-flex items-center space-x-2 py-3 px-4 text-sm font-medium transition-all duration-300 border-b-2 cursor-pointer transform hover:scale-[1.03] 
                   ${urlState.tab === tab && !urlState.dev
                     ? 'border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400 font-bold' 
                     : 'border-transparent text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:border-gray-300'}`
                 }
               >
-                {tab}
+                <Icon 
+                  name={tab} 
+                  className={`w-4 h-4 transition-colors duration-300 ${urlState.tab === tab && !urlState.dev ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`} 
+                />
+                <span>{tab}</span>
               </button>
             ))}
           </div>
@@ -520,6 +602,7 @@ export default function Home() {
         <main className="container mx-auto p-6 md:p-10">
           <div className="flex justify-between items-center mb-8 transition-all duration-300">
               <h2 className="text-3xl font-bold capitalize transition-colors duration-300">
+                  {/* Updated title to reflect developer filter accurately */}
                   {urlState.dev ? `Apps by ${urlState.dev}` : `${urlState.tab} Apps`}
               </h2>
               {urlState.dev && (
@@ -532,39 +615,64 @@ export default function Home() {
               )}
           </div>
           
-          {loading && (
-            <div className="text-center text-xl text-gray-500 dark:text-gray-400 py-10 transition-opacity duration-500">
-              <div className="animate-spin inline-block w-8 h-8 border-4 border-t-4 border-blue-500 border-opacity-50 rounded-full"></div>
-              <p className="mt-2">Loading apps...</p>
-            </div>
-          )}
-          
-          {error && (
-            <div className="text-center text-red-700 bg-red-100 dark:bg-red-900 dark:text-red-200 p-4 rounded-xl shadow-md transition-colors duration-300">
-              <p className="font-semibold mb-2">Error Loading Data</p>
-              <p>{error}</p>
-            </div>
-          )}
+          {/* NEW: Wrapper for transition when content changes (tab/search/dev) */}
+          <div 
+            key={`${urlState.tab}-${urlState.search}-${urlState.dev}`} // Key change triggers remount/transition
+            className="animate-fade-in transition-opacity duration-300 ease-in-out" 
+            style={{ 
+              animationName: 'fade-in',
+              animationDuration: '0.3s',
+              animationTimingFunction: 'ease-out',
+            }}
+          >
+              <style>{`
+                  /* Define a simple keyframe animation for the fade-in effect */
+                  @keyframes fade-in {
+                      from { opacity: 0; transform: translateY(10px); }
+                      to { opacity: 1; transform: translateY(0); }
+                  }
+                  .animate-fade-in {
+                      animation-name: fade-in;
+                      animation-duration: 0.3s;
+                      animation-timing-function: ease-out;
+                      animation-fill-mode: forwards;
+                  }
+              `}</style>
 
-          {!loading && !error && Array.isArray(filteredApps) && filteredApps.length === 0 && (
-            <div className="text-center py-10 text-gray-500 dark:text-gray-400 transition-opacity duration-300">
-              <p className="text-2xl font-semibold">No results found.</p>
-              <p className="mt-2">Try a different filter or search term.</p>
-            </div>
-          )}
-          
-          {!loading && !error && Array.isArray(filteredApps) && filteredApps.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 transition-all duration-500">
-              {filteredApps.map((app) => (
-                <AppCard 
-                  key={app.id} 
-                  app={app} 
-                  onSelect={(a) => updateUrl({ appId: a.id })} 
-                  onDeveloperFilter={handleDeveloperClick}
-                />
-              ))}
-            </div>
-          )}
+              {loading && (
+                <div className="text-center text-xl text-gray-500 dark:text-gray-400 py-10 transition-opacity duration-500">
+                  <div className="animate-spin inline-block w-8 h-8 border-4 border-t-4 border-blue-500 border-opacity-50 rounded-full"></div>
+                  <p className="mt-2">Loading apps...</p>
+                </div>
+              )}
+              
+              {error && (
+                <div className="text-center text-red-700 bg-red-100 dark:bg-red-900 dark:text-red-200 p-4 rounded-xl shadow-md transition-colors duration-300">
+                  <p className="font-semibold mb-2">Error Loading Data</p>
+                  <p>{error}</p>
+                </div>
+              )}
+
+              {!loading && !error && Array.isArray(filteredApps) && filteredApps.length === 0 && (
+                <div className="text-center py-10 text-gray-500 dark:text-gray-400 transition-opacity duration-300">
+                  <p className="text-2xl font-semibold">No results found.</p>
+                  <p className="mt-2">Try a different filter or search term.</p>
+                </div>
+              )}
+              
+              {!loading && !error && Array.isArray(filteredApps) && filteredApps.length > 0 && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 transition-all duration-500">
+                  {filteredApps.map((app) => (
+                    <AppCard 
+                      key={app.id} 
+                      app={app} 
+                      onSelect={(a) => updateUrl({ appId: a.id })} 
+                      onDeveloperFilter={handleDeveloperClick}
+                    />
+                  ))}
+                </div>
+              )}
+          </div>
         </main>
 
         <footer className="text-center py-8 mt-10 border-t border-gray-200 dark:border-gray-700 transition-colors duration-300">
